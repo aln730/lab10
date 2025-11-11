@@ -1,5 +1,5 @@
 library ieee;
-use ieee.std_logic_1164.ALL;
+use ieee.std_logic_1164.all;
 
 entity DM74LS153 is
     port (
@@ -7,7 +7,7 @@ entity DM74LS153 is
         A   : in  std_logic;
         B   : in  std_logic;
         
-        -- Enable inputs
+        -- Enable inputs (active low)
         G1  : in  std_logic;
         G2  : in  std_logic;
         
@@ -21,11 +21,14 @@ entity DM74LS153 is
     );
 end entity DM74LS153;
 
+----------------------------------------------------------------------
+-- Dataflow architecture
+----------------------------------------------------------------------
 architecture df of DM74LS153 is
     -- Internal control signals
     signal sControl1, sControl2 : std_logic_vector(2 downto 0);
 begin
-    -- Create control signals for each multiplexer
+    -- Create control signals for each multiplexer (G, B, A)
     sControl1 <= G1 & B & A;
     sControl2 <= G2 & B & A;
 
@@ -46,42 +49,42 @@ begin
               '0'   when others;  -- disabled or undefined
 end architecture df;
 
+----------------------------------------------------------------------
+-- Behavioral architecture (using sControl1 and sControl2)
+----------------------------------------------------------------------
 architecture behv of DM74LS153 is
+    signal sControl1, sControl2 : std_logic_vector(2 downto 0);
 begin
+    sControl1 <= G1 & B & A;
+    sControl2 <= G2 & B & A;
 
-    process (A, B, G1, C1)
+    process (sControl1, C1)
     begin
-        if G1 = '0' then  -- enabled
-            case (B & A) is
-                when "00" => Y1 <= C1(0) after 22 ns;
-                when "01" => Y1 <= C1(1) after 22 ns;
-                when "10" => Y1 <= C1(2) after 22 ns;
-                when "11" => Y1 <= C1(3) after 22 ns;
-                when others => Y1 <= '0' after 22 ns;
-            end case;
-        else
-            Y1 <= '0' after 22 ns;  -- disabled
-        end if;
+        case sControl1 is
+            when "000" => Y1 <= C1(0) after 22 ns;
+            when "001" => Y1 <= C1(1) after 22 ns;
+            when "010" => Y1 <= C1(2) after 22 ns;
+            when "011" => Y1 <= C1(3) after 22 ns;
+            when others => Y1 <= '0' after 22 ns;  -- disabled
+        end case;
     end process;
 
-
-    process (A, B, G2, C2)
+    process (sControl2, C2)
     begin
-        if G2 = '0' then  -- enabled
-            case (B & A) is
-                when "00" => Y2 <= C2(0) after 22 ns;
-                when "01" => Y2 <= C2(1) after 22 ns;
-                when "10" => Y2 <= C2(2) after 22 ns;
-                when "11" => Y2 <= C2(3) after 22 ns;
-                when others => Y2 <= '0' after 22 ns;
-            end case;
-        else
-            Y2 <= '0' after 22 ns;  -- disabled
-        end if;
+        case sControl2 is
+            when "000" => Y2 <= C2(0) after 22 ns;
+            when "001" => Y2 <= C2(1) after 22 ns;
+            when "010" => Y2 <= C2(2) after 22 ns;
+            when "011" => Y2 <= C2(3) after 22 ns;
+            when others => Y2 <= '0' after 22 ns;  -- disabled
+        end case;
     end process;
 
 end architecture behv;
 
+----------------------------------------------------------------------
+-- Structural architecture
+----------------------------------------------------------------------
 architecture struct of DM74LS153 is
     component MUX4
         port (
@@ -97,7 +100,3 @@ begin
     -- Second multiplexer
     MUX2: MUX4 port map (A => A, B => B, G => G2, C => C2, Y => Y2);
 end architecture struct;
-
-
-
-
