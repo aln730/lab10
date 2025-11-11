@@ -21,3 +21,28 @@ entity DM74LS153 is
     );
 end entity DM74LS153;
 
+architecture df of DM74LS153 is
+    -- Internal control signals
+    signal sControl1, sControl2 : std_logic_vector(2 downto 0);
+begin
+    -- Create control signals for each multiplexer
+    sControl1 <= G1 & B & A;
+    sControl2 <= G2 & B & A;
+
+    -- Model of the first multiplexer
+    with sControl1 select
+        Y1 <= C1(0) when "000",
+              C1(1) when "001",
+              C1(2) when "010",
+              C1(3) when "011",
+              '0'   when others;  -- disabled or undefined
+
+    -- Model of the second multiplexer
+    with sControl2 select
+        Y2 <= C2(0) when "000",
+              C2(1) when "001",
+              C2(2) when "010",
+              C2(3) when "011",
+              '0'   when others;  -- disabled or undefined
+end architecture df;
+
