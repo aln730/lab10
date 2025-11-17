@@ -112,9 +112,6 @@ begin
               '0'   when others;
 end architecture df;
 
--- ===============================
--- Part 4: Behavioral Architecture (if-elsif)
--- ===============================
 architecture behv of DM74LS153 is
 begin
     -- First MUX
@@ -153,6 +150,7 @@ begin
         end if;
     end process;
 end architecture behv;
+
 
 -- ===============================
 -- Part 5: Structural Architecture
