@@ -114,42 +114,60 @@ end architecture df;
 
 architecture behv of DM74LS153 is
 begin
-    -- First MUX
+    --------------------------------------------------------------------
+    -- Multiplexer 1 (Y1)
+    --------------------------------------------------------------------
     process(G1, A, B, C1)
     begin
         if G1 = '1' then
+            -- Strobe disables output
             Y1 <= '0' after 22 ns;
-        elsif (A='0' and B='0') then
-            Y1 <= C1(0) after 22 ns;
-        elsif (A='0' and B='1') then
-            Y1 <= C1(1) after 22 ns;
-        elsif (A='1' and B='0') then
-            Y1 <= C1(2) after 22 ns;
-        elsif (A='1' and B='1') then
-            Y1 <= C1(3) after 22 ns;
+
         else
-            Y1 <= '0' after 22 ns;
+            -- Select by B & A using CASE
+            case (B & A) is
+                when "00" =>
+                    Y1 <= C1(0) after 22 ns;
+                when "01" =>
+                    Y1 <= C1(1) after 22 ns;
+                when "10" =>
+                    Y1 <= C1(2) after 22 ns;
+                when "11" =>
+                    Y1 <= C1(3) after 22 ns;
+                when others =>
+                    Y1 <= '0'   after 22 ns;
+            end case;
         end if;
     end process;
 
-    -- Second MUX
+    --------------------------------------------------------------------
+    -- Multiplexer 2 (Y2)
+    --------------------------------------------------------------------
     process(G2, A, B, C2)
     begin
         if G2 = '1' then
+            -- Strobe disables output
             Y2 <= '0' after 22 ns;
-        elsif (A='0' and B='0') then
-            Y2 <= C2(0) after 22 ns;
-        elsif (A='0' and B='1') then
-            Y2 <= C2(1) after 22 ns;
-        elsif (A='1' and B='0') then
-            Y2 <= C2(2) after 22 ns;
-        elsif (A='1' and B='1') then
-            Y2 <= C2(3) after 22 ns;
+
         else
-            Y2 <= '0' after 22 ns;
+            -- Select by B & A using CASE
+            case (B & A) is
+                when "00" =>
+                    Y2 <= C2(0) after 22 ns;
+                when "01" =>
+                    Y2 <= C2(1) after 22 ns;
+                when "10" =>
+                    Y2 <= C2(2) after 22 ns;
+                when "11" =>
+                    Y2 <= C2(3) after 22 ns;
+                when others =>
+                    Y2 <= '0'   after 22 ns;
+            end case;
         end if;
     end process;
+
 end architecture behv;
+
 
 
 -- ===============================
