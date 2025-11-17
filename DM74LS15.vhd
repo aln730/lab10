@@ -1,6 +1,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
+-- ===============================
+-- Entity Declaration
+-- ===============================
 entity DM74LS153 is
     port (
         G1, G2 : in  std_logic;                  -- Enable for MUX1 and MUX2
@@ -10,46 +13,40 @@ entity DM74LS153 is
     );
 end entity DM74LS153;
 
+-- ===============================
+-- Part 2: Dataflow Architecture
+-- ===============================
 architecture df of DM74LS153 is
-    signal sControl1, sControl2 : std_logic_vector(3 downto 0);
 begin
-    -- Control signals for MUX1 and MUX2 (active-low enable)
-    sControl1 <= "0001" when A='0' and B='0' else
-                 "0010" when A='1' and B='0' else
-                 "0100" when A='0' and B='1' else
-                 "1000";
-
-    sControl2 <= "0001" when A='0' and B='0' else
-                 "0010" when A='1' and B='0' else
-                 "0100" when A='0' and B='1' else
-                 "1000";
-
-    -- First multiplexer
-    with sControl1 select
-        Y1 <= C1(0) when "0001",
-              C1(1) when "0010",
-              C1(2) when "0100",
-              C1(3) when "1000",
+    -- First multiplexer (dataflow)
+    with A & B select
+        Y1 <= C1(0) when "00",
+              C1(1) when "01",
+              C1(2) when "10",
+              C1(3) when "11",
               '0'   when others;
 
-    -- Second multiplexer
-    with sControl2 select
-        Y2 <= C2(0) when "0001",
-              C2(1) when "0010",
-              C2(2) when "0100",
-              C2(3) when "1000",
+    -- Second multiplexer (dataflow)
+    with A & B select
+        Y2 <= C2(0) when "00",
+              C2(1) when "01",
+              C2(2) when "10",
+              C2(3) when "11",
               '0'   when others;
 end architecture df;
 
+-- ===============================
+-- Part 3: Behavioral Architecture
+-- ===============================
 architecture behv of DM74LS153 is
 begin
-    -- Process for first multiplexer
+    -- First multiplexer (behavioral)
     process(G1, A, B, C1)
     begin
         if G1 = '1' then
             Y1 <= '0' after 22 ns;
         else
-            case (A & B) is
+            case A & B is
                 when "00" => Y1 <= C1(0) after 22 ns;
                 when "01" => Y1 <= C1(1) after 22 ns;
                 when "10" => Y1 <= C1(2) after 22 ns;
@@ -59,13 +56,13 @@ begin
         end if;
     end process;
 
-    -- Process for second multiplexer
+    -- Second multiplexer (behavioral)
     process(G2, A, B, C2)
     begin
         if G2 = '1' then
             Y2 <= '0' after 22 ns;
         else
-            case (A & B) is
+            case A & B is
                 when "00" => Y2 <= C2(0) after 22 ns;
                 when "01" => Y2 <= C2(1) after 22 ns;
                 when "10" => Y2 <= C2(2) after 22 ns;
@@ -76,7 +73,26 @@ begin
     end process;
 end architecture behv;
 
+-- ===============================
+-- Part 4: Structural Architecture
+-- ===============================
 architecture struct of DM74LS153 is
+
+    -- ===============================
+    -- Component Declarations
+    -- ===============================
+    component INV
+        port (A : in std_logic; Y : out std_logic);
+    end component;
+
+    component AND4
+        port (A, B, C, D : in std_logic; Y : out std_logic);
+    end component;
+
+    component OR4
+        port (A, B, C, D : in std_logic; Y : out std_logic);
+    end component;
+
     component MUX4
         port (
             A, B, G  : in  std_logic;
@@ -105,4 +121,5 @@ begin
             C => C2,
             Y => Y2
         );
+
 end architecture struct;
