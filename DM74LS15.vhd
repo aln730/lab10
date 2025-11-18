@@ -112,35 +112,41 @@ begin
               '0'   when others;
 end architecture df;
 
--- ===============================
--- Part 4: Behavioral Architecture
--- ===============================
 architecture behv of DM74LS153 is
-    signal sel1, sel2 : std_logic_vector(2 downto 0);  -- 3-bit selection signals (G & B & A)
 begin
-    -- Combine G, B, A into a single 3-bit vector
-    sel1 <= G1 & B & A;
-    sel2 <= G2 & B & A;
 
     --------------------------------------------------------------------
-    -- MUX 1 (Y1)
+    -- MUX 1 (Y1) using a variable
     --------------------------------------------------------------------
-    Y1 <= '0'   when sel1(2) = '1' after 22 ns;  -- G1 high disables MUX
-    Y1 <= C1(0) when sel1(1 downto 0) = "00" after 22 ns;
-    Y1 <= C1(1) when sel1(1 downto 0) = "01" after 22 ns;
-    Y1 <= C1(2) when sel1(1 downto 0) = "10" after 22 ns;
-    Y1 <= C1(3) when sel1(1 downto 0) = "11" after 22 ns;
+    process(G1, A, B, C1)
+        variable sel1 : std_logic_vector(2 downto 0);
+    begin
+        sel1 := G1 & B & A;
+
+        Y1 <= '0'   after 22 ns when sel1 = "100";
+        Y1 <= C1(0) after 22 ns when sel1 = "000";
+        Y1 <= C1(1) after 22 ns when sel1 = "001";
+        Y1 <= C1(2) after 22 ns when sel1 = "010";
+        Y1 <= C1(3) after 22 ns when sel1 = "011";
+    end process;
 
     --------------------------------------------------------------------
-    -- MUX 2 (Y2)
+    -- MUX 2 (Y2) using a variable
     --------------------------------------------------------------------
-    Y2 <= '0'   when sel2(2) = '1' after 22 ns;  -- G2 high disables MUX
-    Y2 <= C2(0) when sel2(1 downto 0) = "00" after 22 ns;
-    Y2 <= C2(1) when sel2(1 downto 0) = "01" after 22 ns;
-    Y2 <= C2(2) when sel2(1 downto 0) = "10" after 22 ns;
-    Y2 <= C2(3) when sel2(1 downto 0) = "11" after 22 ns;
+    process(G2, A, B, C2)
+        variable sel2 : std_logic_vector(2 downto 0);
+    begin
+        sel2 := G2 & B & A;
+
+        Y2 <= '0'   after 22 ns when sel2 = "100";
+        Y2 <= C2(0) after 22 ns when sel2 = "000";
+        Y2 <= C2(1) after 22 ns when sel2 = "001";
+        Y2 <= C2(2) after 22 ns when sel2 = "010";
+        Y2 <= C2(3) after 22 ns when sel2 = "011";
+    end process;
 
 end architecture behv;
+
 
 
 -- ===============================
