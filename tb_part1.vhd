@@ -18,9 +18,7 @@ architecture tb of tb_part1_testset2_inactiveG is
 
 begin
 
-    --------------------------------------------------------------------
     -- 3 INSTANCES IN PARALLEL
-    --------------------------------------------------------------------
     dut_df: entity work.DM74LS153(df)
         port map (G1 => G1, G2 => G2, A => A, B => B, C1 => C1, C2 => C2, Y1 => Y1_df, Y2 => Y2_df);
 
@@ -30,9 +28,7 @@ begin
     dut_struct: entity work.DM74LS153(struct)
         port map (G1 => G1, G2 => G2, A => A, B => B, C1 => C1, C2 => C2, Y1 => Y1_struct, Y2 => Y2_struct);
 
-    --------------------------------------------------------------------
     -- STIMULUS PROCESS: Test Set 2 with inactive G
-    --------------------------------------------------------------------
     stim_proc : process
     begin
         -- Set G inactive
